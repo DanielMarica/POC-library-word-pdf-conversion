@@ -8,8 +8,8 @@ const convertAsync = util.promisify(libre.convert);
 
 async function main() {
     // Chemins des fichiers (relatifs au dossier d'exécution /app dans Docker)
-    const inputPath = path.resolve(__dirname, '../input.docx');
-    const outputPath = path.resolve(__dirname, '../output.pdf');
+    const inputPath = path.resolve(__dirname, '../files/input.docx');
+    const outputPath = path.resolve(__dirname, '../files/output.pdf');
 
     console.log('🚀 Démarrage du POC Conversion (TypeScript)...');
 

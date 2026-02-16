@@ -1,28 +1,24 @@
-# 1. Image de base : Node.js sur Debian (nécessaire pour LibreOffice)
 FROM node:18-bullseye-slim
 
-# 2. Installation de LibreOffice et des polices nécessaires
+# 1. Install LibreOffice
 RUN apt-get update && apt-get install -y \
     libreoffice \
     fonts-liberation \
     fontconfig \
     && rm -rf /var/lib/apt/lists/*
 
-# 3. Dossier de travail
 WORKDIR /app
 
-# 4. Copie des fichiers de configuration
 COPY package*.json tsconfig.json ./
-
-# 5. Installation des dépendances
 RUN npm install
 
-# 6. Copie du code source
+# 2. Copie du code source
 COPY src ./src
 
-# 7. Compilation du TypeScript vers JavaScript (dossier dist)
-# On utilise npx tsc pour utiliser le compilateur local
+# 3. Création du dossier pour les fichiers (vide pour l'instant)
+RUN mkdir files
+
+# 4. Compilation (C'est ICI que Docker crée le dist tout seul)
 RUN npx tsc
 
-# 8. Commande de lancement (exécute le JS compilé)
 CMD ["node", "dist/index.js"]
