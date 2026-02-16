@@ -1,0 +1,11 @@
+applications:
+  - name: cv-converter-poc
+    stack: cflinuxfs4
+    docker:
+      image: maricalivius/poc-word-to-pdf:latest
+    memory: 1024M
+    disk_quota: 1024M
+    health-check-type: http
+    health-check-http-endpoint: /
+    routes:
+      - route: cv-converter-marica.cfapps.us10-001.hana.ondemand.com

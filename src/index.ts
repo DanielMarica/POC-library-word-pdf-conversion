@@ -44,6 +44,11 @@ app.post('/convert', upload.single('file'), async (req: Request, res: Response) 
     }
 });
 
+// Route de santé pour SAP BTP
+app.get('/', (req, res) => {
+    res.send('Serveur de conversion prêt !');
+});
+
 app.listen(port, () => {
     console.log(`🚀 Serveur de conversion prêt sur le port ${port}`);
 });
