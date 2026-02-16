@@ -1,24 +1,30 @@
-# 1. On utilise Bookworm (Debian 12) plus stable pour les puces M4
 FROM --platform=linux/amd64 node:18-bookworm-slim
 
-# 2. On ajoute des options de robustesse pour apt-get
-RUN apt-get update && \
-    apt-get install -y --fix-missing --no-install-recommends \
-    libreoffice \
+ENV DEBIAN_FRONTEND=noninteractive
+
+# INSTALLATION CRITIQUE : python3-uno est OBLIGATOIRE pour que unoserver fonctionne
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libreoffice-writer \
+    libreoffice-java-common \
+    python3-uno \
+    python3-pip \
+    netcat-openbsd \
     fonts-liberation \
-    fontconfig && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    fontconfig \
+    && pip3 install unoserver --break-system-packages \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 WORKDIR /app
-
 COPY package*.json tsconfig.json ./
-RUN npm install
+RUN npm install --production=false
 
 COPY src ./src
-# On s'assure que le dossier uploads existe
-RUN mkdir -p uploads && npx tsc
+# Création explicite des dossiers
+RUN mkdir -p files uploads && npx tsc && npm prune --production
+
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
 
 EXPOSE 4004
-
-CMD ["node", "dist/index.js"]
+CMD ["/start.sh"]
