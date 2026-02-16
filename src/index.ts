@@ -1,46 +1,49 @@
+import express, { Request, Response } from 'express';
+import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import libre from 'libreoffice-convert';
 import util from 'util';
 
-// Promisify la fonction de conversion pour utiliser async/await
 const convertAsync = util.promisify(libre.convert);
+const app = express();
+const port = process.env.PORT || 4004; // Port par défaut SAP CAP
 
-async function main() {
-    // Chemins des fichiers (relatifs au dossier d'exécution /app dans Docker)
-    const inputPath = path.resolve(__dirname, '../files/input.docx');
-    const outputPath = path.resolve(__dirname, '../files/output.pdf');
+// Configuration de Multer pour stocker temporairement le fichier uploadé
+const upload = multer({ dest: 'uploads/' });
 
-    console.log('🚀 Démarrage du POC Conversion (TypeScript)...');
-
+app.post('/convert', upload.single('file'), async (req: Request, res: Response) => {
     try {
-        // 1. Vérifier si le fichier source existe
-        if (!fs.existsSync(inputPath)) {
-            throw new Error(`Le fichier source est introuvable : ${inputPath}`);
+        if (!req.file) {
+            return res.status(400).send('Aucun fichier reçu.');
         }
 
-        // 2. Lire le fichier Word
-        console.log(`📖 Lecture du fichier : ${inputPath}`);
+        console.log(`📩 Fichier reçu : ${req.file.originalname}`);
+        const inputPath = req.file.path;
+        const outputPath = path.join('uploads', `${req.file.filename}.pdf`);
+
+        // 1. Lecture du Word reçu
         const docxBuf = fs.readFileSync(inputPath);
 
-        // 3. Convertir en PDF
-        console.log('⚙️ Conversion en cours via LibreOffice...');
-        // Le 3ème argument est pour les options de filtre, undefined ici
+        // 2. Conversion via LibreOffice
+        console.log('⚙️ Conversion en cours...');
         const pdfBuf = await convertAsync(docxBuf, '.pdf', undefined);
 
-        // 4. Écrire le fichier de sortie
-        fs.writeFileSync(outputPath, pdfBuf);
+        // 3. Envoi du PDF au client
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=conversion.pdf`);
+        res.send(pdfBuf);
 
-        console.log(`✅ Succès ! PDF généré ici : ${outputPath}`);
+        // 4. Nettoyage des fichiers temporaires
+        fs.unlinkSync(inputPath); 
+        console.log('✅ Conversion réussie et envoyée.');
 
-    } catch (err: any) {
-        console.error('❌ Erreur lors de la conversion :');
-        console.error(err);
-        
-        if (err.message && err.message.includes('libreoffice')) {
-            console.error('👉 Astuce : Êtes-vous sûr de lancer ce script via Docker ? LibreOffice est requis.');
-        }
+    } catch (err) {
+        console.error('❌ Erreur:', err);
+        res.status(500).send('Erreur lors de la conversion.');
     }
-}
+});
 
-main();
+app.listen(port, () => {
+    console.log(`🚀 Serveur de conversion prêt sur le port ${port}`);
+});

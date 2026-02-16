@@ -1,2 +1,5 @@
-#node modules
 node_modules/
+dist/
+uploads/
+files/output.pdf
+.DS_Store
