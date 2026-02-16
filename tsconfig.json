@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    // 1. Où est le code et où il doit aller (CRUCIAL pour Docker)
+    "rootDir": "./src",
+    "outDir": "./dist",
+
+    // 2. Configuration moderne pour Node.js
+    "target": "es2020",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    
+    // 3. Interopérabilité (Pour que les imports fonctionnent bien avec les vieilles libs)
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true,
+
+    // 4. Important pour que Node fonctionne
+    "types": ["node"]
+  },
+  "include": ["src/**/*"]
+}
