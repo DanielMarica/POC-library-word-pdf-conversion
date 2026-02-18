@@ -38,4 +38,4 @@ L'image Docker contient tout le nécessaire (Node.js + LibreOffice + Code). Pour
    Cette étape installe TypeScript, compile le code et prépare l'environnement Linux avec LibreOffice. 
    -> docker build -t poc-word-to-pdf .
    Pour lancer la conversion
-   -> docker run --rm -v "$(pwd):/app" poc-word-to-pdf
+   -> docker run --rm -v "$(pwd):/app" poc-word-to-pdf# POC-Gotenberg-converter
