@@ -6,9 +6,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libreoffice-writer \
     libreoffice-java-common \
+    default-jre-headless \
     python3-uno \
     python3-pip \
     netcat-openbsd \
+    curl \                 
     fonts-liberation \
     fontconfig \
     && pip3 install unoserver --break-system-packages \

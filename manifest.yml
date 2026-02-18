@@ -7,5 +7,6 @@ applications:
     disk_quota: 1024M
     health-check-type: http
     health-check-http-endpoint: /
+    health-check-invocation-timeout: 120
     routes:
       - route: cv-converter-marica.cfapps.us10-001.hana.ondemand.com
